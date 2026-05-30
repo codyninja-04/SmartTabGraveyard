@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Generate Icons</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #0c0c0f; color: #f0f0f5; padding: 32px; }
+    h1 { margin-bottom: 24px; font-size: 18px; }
+    .grid { display: flex; gap: 32px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 32px; }
+    .icon-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    canvas { border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; }
+    .size-label { font-size: 12px; color: #8a8aa8; }
+    a { display: inline-block; margin-top: 6px; padding: 6px 14px; background: #7c5cf8; color: #fff;
+        border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 600; }
+    a:hover { background: #9370ff; }
+    p { color: #8a8aa8; font-size: 13px; line-height: 1.7; max-width: 520px; margin-top: 16px; }
+    code { background: #1c1c22; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Smart Tab Graveyard — Icon Generator</h1>
+  <div class="grid" id="grid"></div>
+  <p>
+    Click each download link to save the PNG file, then place them in the
+    <code>icons/</code> folder as <code>icon16.png</code>, <code>icon48.png</code>,
+    and <code>icon128.png</code>.
+  </p>
+
+  <script>
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    function drawIcon(size) {
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      const s = size / 128; // scale factor
+
+      // Background — rounded square
+      const bgRadius = size * 0.18;
+      roundRect(ctx, 0, 0, size, size, bgRadius);
+      ctx.fillStyle = '#141418';
+      ctx.fill();
+
+      // Slight gradient overlay
+      const grad = ctx.createLinearGradient(0, 0, 0, size);
+      grad.addColorStop(0, 'rgba(124,92,248,0.18)');
+      grad.addColorStop(1, 'rgba(0,0,0,0)');
+      roundRect(ctx, 0, 0, size, size, bgRadius);
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // === Tombstone ===
+      const cx = size * 0.5;
+      const stoneColor = '#c4b5fd';
+      const crossColor = '#141418';
+
+      // Body rect
+      const bodyX = size * 0.28;
+      const bodyY = size * 0.42;
+      const bodyW = size * 0.44;
+      const bodyH = size * 0.35;
+      roundRect(ctx, bodyX, bodyY, bodyW, bodyH, size * 0.04);
+      ctx.fillStyle = stoneColor;
+      ctx.fill();
+
+      // Arch top
+      const archCy = bodyY;
+      const archR = bodyW / 2;
+      ctx.beginPath();
+      ctx.arc(cx, archCy, archR, Math.PI, 0, false);
+      ctx.closePath();
+      ctx.fillStyle = stoneColor;
+      ctx.fill();
+
+      // Base slab
+      const baseX = size * 0.2;
+      const baseY = bodyY + bodyH;
+      const baseW = size * 0.6;
+      const baseH = size * 0.08;
+      roundRect(ctx, baseX, baseY, baseW, baseH, size * 0.02);
+      ctx.fillStyle = '#a78bfa';
+      ctx.fill();
+
+      // Cross on stone (vertical)
+      const cvx = cx - size * 0.018;
+      const cvy = archCy - archR * 0.3;
+      ctx.fillStyle = crossColor;
+      ctx.fillRect(cvx, cvy, size * 0.036, size * 0.28);
+
+      // Cross (horizontal)
+      const chx = cx - size * 0.09;
+      const chy = archCy - archR * 0.05;
+      ctx.fillRect(chx, chy, size * 0.18, size * 0.036);
+
+      return canvas;
+    }
+
+    const sizes = [16, 48, 128];
+    const grid = document.getElementById('grid');
+
+    for (const size of sizes) {
+      const canvas = drawIcon(size);
+      const wrap = document.createElement('div');
+      wrap.className = 'icon-wrap';
+
+      const displayCanvas = drawIcon(Math.max(size, 64));
+      displayCanvas.style.width = Math.max(size, 64) + 'px';
+      displayCanvas.style.height = Math.max(size, 64) + 'px';
+
+      const actual = drawIcon(size);
+      const dataUrl = actual.toDataURL('image/png');
+
+      const label = document.createElement('div');
+      label.className = 'size-label';
+      label.textContent = `${size} × ${size}`;
+
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = `icon${size}.png`;
+      link.textContent = `↓ icon${size}.png`;
+
+      wrap.appendChild(displayCanvas);
+      wrap.appendChild(label);
+      wrap.appendChild(link);
+      grid.appendChild(wrap);
+    }
+  </script>
+</body>
+</html>
