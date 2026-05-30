@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Tab Graveyard</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-brand">
+      <svg class="brand-icon" viewBox="0 0 24 24" fill="none">
+        <rect x="6" y="10" width="12" height="11" rx="1" fill="currentColor" opacity="0.9"/>
+        <path d="M6 10 Q6 4 12 4 Q18 4 18 10" fill="currentColor" opacity="0.9"/>
+        <rect x="4" y="20" width="16" height="2.5" rx="1" fill="currentColor" opacity="0.6"/>
+        <rect x="11" y="13" width="2" height="5" rx="0.5" fill="var(--bg-1)"/>
+        <rect x="9.5" y="15" width="5" height="1.5" rx="0.5" fill="var(--bg-1)"/>
+      </svg>
+      <span class="brand-name">Graveyard</span>
+    </div>
+    <button class="btn-icon-round" id="btnSettings" title="Settings" aria-label="Settings">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <circle cx="10" cy="10" r="2.5"/>
+        <path d="M10 2.5v1.25M10 16.25v1.25M2.5 10h1.25M16.25 10h1.25M4.697 4.697l.884.884M14.42 14.42l.883.883M4.697 15.303l.884-.884M14.42 5.58l.883-.884"/>
+      </svg>
+    </button>
+  </header>
+
+  <!-- Stats bar -->
+  <div class="stats-bar">
+    <div class="stat">
+      <span class="stat-value" id="statCount">—</span>
+      <span class="stat-label">archived</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-value" id="statMemory">—</span>
+      <span class="stat-label">est. freed</span>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="search-wrap">
+    <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="8.5" cy="8.5" r="5"/>
+      <path d="M16 16l-3.5-3.5"/>
+    </svg>
+    <input
+      class="search-input"
+      id="searchInput"
+      type="text"
+      placeholder="Search archived tabs…"
+      autocomplete="off"
+      spellcheck="false"
+    >
+    <button class="search-clear hidden" id="searchClear" aria-label="Clear search">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <path d="M5 5l10 10M15 5L5 15"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Tab list -->
+  <div class="section-label" id="sectionLabel">Recent</div>
+
+  <div class="tab-list" id="tabList">
+    <div class="loading-state" id="loadingState">
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <button class="btn-open-graveyard" id="btnOpenGraveyard">
+      Open Full Graveyard
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 8h10M9 4l4 4-4 4"/>
+      </svg>
+    </button>
+  </footer>
+
+  <!-- Settings Panel -->
+  <div class="settings-overlay hidden" id="settingsOverlay">
+    <div class="settings-panel" id="settingsPanel">
+      <div class="settings-header">
+        <span class="settings-title">Settings</span>
+        <button class="btn-icon-round" id="btnCloseSettings" aria-label="Close settings">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <path d="M5 5l10 10M15 5L5 15"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="settings-body">
+        <div class="setting-row">
+          <div class="setting-info">
+            <label class="setting-label" for="thresholdInput">Inactivity threshold</label>
+            <span class="setting-desc">Archive tabs inactive longer than this</span>
+          </div>
+          <div class="threshold-control">
+            <input class="threshold-input" id="thresholdInput" type="number" min="1" max="365" value="3">
+            <span class="threshold-unit">days</span>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <label class="setting-label" for="toggleAutoArchive">Auto-archive</label>
+            <span class="setting-desc">Runs silently in the background</span>
+          </div>
+          <button class="toggle" id="toggleAutoArchive" role="switch" aria-checked="true">
+            <span class="toggle-thumb"></span>
+          </button>
+        </div>
+
+        <div class="settings-divider"></div>
+
+        <button class="btn-archive-now" id="btnArchiveNow">
+          Archive inactive tabs now
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
