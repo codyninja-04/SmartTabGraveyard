@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Tab Graveyard</title>
+  <link rel="stylesheet" href="graveyard.css">
+</head>
+<body>
+
+  <!-- App shell -->
+  <div class="app">
+
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="brand">
+          <svg class="brand-icon" viewBox="0 0 24 24" fill="none">
+            <rect x="6" y="10" width="12" height="11" rx="1" fill="currentColor" opacity="0.9"/>
+            <path d="M6 10 Q6 4 12 4 Q18 4 18 10" fill="currentColor" opacity="0.9"/>
+            <rect x="4" y="20" width="16" height="2.5" rx="1" fill="currentColor" opacity="0.6"/>
+            <rect x="11" y="13" width="2" height="5" rx="0.5" fill="var(--bg-0)"/>
+            <rect x="9.5" y="15" width="5" height="1.5" rx="0.5" fill="var(--bg-0)"/>
+          </svg>
+          <span class="brand-name">Smart Tab Graveyard</span>
+        </div>
+      </div>
+
+      <div class="header-center">
+        <div class="search-wrap">
+          <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="8.5" cy="8.5" r="5"/>
+            <path d="M16 16l-3.5-3.5"/>
+          </svg>
+          <input
+            class="search-input"
+            id="searchInput"
+            type="text"
+            placeholder="Search by title, URL, or domain…"
+            autocomplete="off"
+            spellcheck="false"
+          >
+          <button class="search-clear hidden" id="searchClear" aria-label="Clear">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <path d="M5 5l10 10M15 5L5 15"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <button class="btn-export" id="btnExport" title="Export as bookmarks HTML">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 3v10M6 9l4 4 4-4"/>
+            <path d="M3 14v1a2 2 0 002 2h10a2 2 0 002-2v-1"/>
+          </svg>
+          Export
+        </button>
+        <button class="btn-danger-ghost" id="btnClearAll" title="Delete all archived tabs">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 5.5h14M8.5 5.5V4h3v1.5M7 5.5l.75 10.5h5.5L14 5.5"/>
+          </svg>
+          Clear all
+        </button>
+      </div>
+    </header>
+
+    <!-- Body -->
+    <div class="app-body">
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <!-- Stats -->
+        <div class="sidebar-section">
+          <div class="sidebar-label">Overview</div>
+          <div class="stat-card">
+            <div class="stat-row">
+              <span class="stat-key">Archived</span>
+              <span class="stat-val" id="sidebarCount">—</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-key">Est. freed</span>
+              <span class="stat-val accent" id="sidebarMemory">—</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-key">Oldest</span>
+              <span class="stat-val" id="sidebarOldest">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Time filter -->
+        <div class="sidebar-section">
+          <div class="sidebar-label">Time range</div>
+          <div class="filter-group" id="timeFilters">
+            <button class="filter-btn active" data-filter="all">All time</button>
+            <button class="filter-btn" data-filter="today">Today</button>
+            <button class="filter-btn" data-filter="week">This week</button>
+            <button class="filter-btn" data-filter="month">This month</button>
+          </div>
+        </div>
+
+        <!-- Domain filter -->
+        <div class="sidebar-section" id="domainSection">
+          <div class="sidebar-label">Domain</div>
+          <div class="domain-list" id="domainList">
+            <!-- populated by JS -->
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main -->
+      <main class="main-content">
+
+        <!-- Bulk action toolbar -->
+        <div class="bulk-bar hidden" id="bulkBar">
+          <label class="bulk-select-all">
+            <input type="checkbox" id="selectAll">
+            <span id="bulkLabel">0 selected</span>
+          </label>
+          <div class="bulk-actions">
+            <button class="btn-bulk-restore" id="btnBulkRestore">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 9.5h9a4 4 0 010 8H8"/>
+                <path d="M7.5 6L4 9.5 7.5 13"/>
+              </svg>
+              Restore selected
+            </button>
+            <button class="btn-bulk-delete" id="btnBulkDelete">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 5.5h14M8.5 5.5V4h3v1.5M7 5.5l.75 10.5h5.5L14 5.5"/>
+              </svg>
+              Delete selected
+            </button>
+          </div>
+        </div>
+
+        <!-- Tab list -->
+        <div class="tab-table" id="tabTable">
+          <div class="tab-table-head">
+            <div class="col-check">
+              <input type="checkbox" id="headerCheckbox" title="Select all visible">
+            </div>
+            <div class="col-favicon"></div>
+            <div class="col-title">Title</div>
+            <div class="col-domain">Domain</div>
+            <div class="col-archived">Archived</div>
+            <div class="col-actions"></div>
+          </div>
+          <div class="tab-table-body" id="tabTableBody">
+            <div class="loading-rows" id="loadingRows">
+              <div class="skeleton-row"></div>
+              <div class="skeleton-row"></div>
+              <div class="skeleton-row"></div>
+              <div class="skeleton-row"></div>
+              <div class="skeleton-row"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer count -->
+        <div class="result-count" id="resultCount"></div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Confirm modal -->
+  <div class="modal-overlay hidden" id="confirmModal">
+    <div class="modal">
+      <div class="modal-title" id="modalTitle">Confirm</div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-actions">
+        <button class="btn-modal-cancel" id="modalCancel">Cancel</button>
+        <button class="btn-modal-confirm" id="modalConfirm">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="graveyard.js"></script>
+</body>
+</html>
